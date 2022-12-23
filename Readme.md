@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Денис Хохлов](https://up.htmlacademy.ru/ecmascript/19/user/665991).
-* Наставник: `Неизвестно`.
+* Наставник: [Полина Шнайдер] (https://htmlacademy.ru/profile/id1178327).
 
 ---
 
