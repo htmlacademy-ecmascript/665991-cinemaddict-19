@@ -18,7 +18,7 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: "public", to: "build" },
+        { from: "public"},
       ],
     }),
   ]
