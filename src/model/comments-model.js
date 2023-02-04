@@ -4,8 +4,9 @@ import { getMockComments } from '../utils/utils.js';
 const COMMENT_COUNT = 30;
 
 export default class CommentModel {
-  comments = getMockComments(COMMENT_COUNT, comments);
-  getComments () {
-    return this.comments;
+  #comments = getMockComments(COMMENT_COUNT, comments);
+
+  get comments () {
+    return this.#comments;
   }
 }
