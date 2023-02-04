@@ -1,13 +1,13 @@
 import {createElement} from '../render.js';
 
-function getShowMoreButton () {
-  return '<button class="films-list__show-more">Show more</button>';
+function getEmptyListMessage () {
+  return '<h2 class="films-list__title">There are no movies in our database</h2>';
 }
-export default class ShowMoreButton {
+export default class EmptyListMessage {
   #element = null;
 
   get template(){
-    return(getShowMoreButton());
+    return(getEmptyListMessage());
   }
 
   get element() {
@@ -16,9 +16,4 @@ export default class ShowMoreButton {
     }
     return this.#element;
   }
-
-  removeElement() {
-    this.#element = null;
-  }
-
 }
