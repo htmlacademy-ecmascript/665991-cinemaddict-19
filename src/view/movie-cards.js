@@ -22,14 +22,26 @@ function getMovieCard (film) {
   </div>
 </article>`);
 }
+
+
 export default class MovieCard {
+  #element = null;
+  #film = null;
+
   constructor(film, commentsCount) {
-    this.film = film;
-    this.film.comments = commentsCount;
+    this.#film = film;
+    this.#film.comments = commentsCount;
   }
 
-  getElement() {
-    return createElement (getMovieCard(this.film));
+  get template(){
+    return(getMovieCard(this.#film));
   }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
 }
-

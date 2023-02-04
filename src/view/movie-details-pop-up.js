@@ -148,12 +148,25 @@ function getMovieDetailsPopUp (comments) {
 }
 
 export default class MovieDetailsPopUp {
-  constructor(comments) {
-    this.comments = comments;
+  #element = null;
+  #comments = null;
 
+  constructor(comments) {
+    this.#comments = comments;
   }
 
-  getElement() {
-    return createElement (getMovieDetailsPopUp(this.comments));
+  get template(){
+    return(getMovieDetailsPopUp(this.#comments));
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
   }
 }
