@@ -1,4 +1,5 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 function getMovieCard (film) {
   const {title, rating, year, duration, description, genre, poster, comments} = film;
@@ -24,24 +25,21 @@ function getMovieCard (film) {
 }
 
 
-export default class MovieCard {
-  #element = null;
+export default class MovieCard extends AbstractView{
   #film = null;
+  #movieCardClickHandler = null;
 
-  constructor(film, commentsCount) {
+  constructor(film, commentsCount, movieCardClickHandler) {
+    super();
     this.#film = film;
     this.#film.comments = commentsCount;
+    this.#movieCardClickHandler = movieCardClickHandler;
+
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#movieCardClickHandler);
   }
 
   get template(){
     return(getMovieCard(this.#film));
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
 }

@@ -1,4 +1,4 @@
-import { render } from './render.js';
+import { render, remove } from './framework/render.js';
 import UserRank from './view/user-rank.js';
 import ShowMoreButton from './view/show-more-button.js';
 import Navigation from './view/navigation.js';
@@ -17,6 +17,9 @@ export default class Presenter {
   #films = null;
   #mainContainer = null;
   #renderedFilmCount = 0;
+  #showMoreButton = null;
+  #popup = null;
+  #body = null;
 
   constructor(mainContainer, commentModel, filmModel) {
     this.#mainContainer = mainContainer;
@@ -26,29 +29,12 @@ export default class Presenter {
 
   #filmInformationRender = (film) => {
     const commentsCount = this.#comments.filter((comment) => (comment.id === film.id)).length;
-    const movieCard = new MovieCard(film, commentsCount);
-    const popup = new MovieDetailsPopUp(this.#comments);
+    const movieCard = new MovieCard(film, commentsCount, this.#processMovieCardClick);
+    this.#popup = new MovieDetailsPopUp(this.#comments, this.#processMovieDetailsPopUpCloseButtonClick);
 
-    const movieCardLink = movieCard.element.querySelector('.film-card__link');
-    const closePopupButton = popup.element.querySelector('.film-details__close-btn');
     const filmsListContainer = document.querySelector('.films-list__container');
-    const body = document.querySelector('body');
+    this.#body = document.querySelector('body');
 
-    movieCardLink.addEventListener('click', () => {
-      render(popup, body);
-      body.classList.add('hide-overflow');
-      document.addEventListener('keydown', (evt) => {
-        if (evt.key === 'Escape' || evt.key === 'Esc') {
-          evt.preventDefault();
-          popup.element.remove();
-          body.classList.remove('hide-overflow');
-        }
-      });
-    });
-    closePopupButton.addEventListener('click', () => {
-      popup.element.remove();
-      body.classList.remove('hide-overflow');
-    });
     render(movieCard, filmsListContainer);
   };
 
@@ -68,21 +54,41 @@ export default class Presenter {
     render(new Filters(), this.#mainContainer);
     render(new FilmsContainer(), this.#mainContainer);
     const filmsList = document.querySelector('.films-list');
-    const showMoreButton = new ShowMoreButton();
+    this.#showMoreButton = new ShowMoreButton(this.#processShowMoreButtonClick);
 
     if(this.#films.length === 0) {
       render(new EmptyListMessage(), filmsList);
     } else {
       this.#sliceAndIterate();
       if (this.#films.length > this.#renderedFilmCount) {
-        render(showMoreButton, filmsList);
+        render(this.#showMoreButton, filmsList);
       }
-      showMoreButton.element.addEventListener('click', () => {
-        this.#sliceAndIterate();
-        if (this.#films.length === this.#renderedFilmCount) {
-          showMoreButton.element.remove();
-        }
-      });
     }
   }
+
+  #processShowMoreButtonClick = () => {
+    this.#sliceAndIterate();
+    if (this.#films.length === this.#renderedFilmCount) {
+      remove(this.#showMoreButton);
+    }
+  };
+
+  #processMovieCardClick = () => {
+    render(this.#popup, this.#body);
+    this.#body.classList.add('hide-overflow');
+    document.addEventListener('keydown', (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        remove(this.#popup);
+        this.#body.classList.remove('hide-overflow');
+      }
+    });
+  };
+
+  #processMovieDetailsPopUpCloseButtonClick = () => {
+    remove(this.#popup);
+    this.#body.classList.remove('hide-overflow');
+  };
 }
+
+

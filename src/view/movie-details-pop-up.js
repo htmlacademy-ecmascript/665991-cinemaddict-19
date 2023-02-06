@@ -1,5 +1,6 @@
-import {createElement} from '../render.js';
 import { movieDetailsPopUp } from '../mock/mock.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 const {
   poster,
@@ -147,26 +148,20 @@ function getMovieDetailsPopUp (comments) {
 </section>`;
 }
 
-export default class MovieDetailsPopUp {
-  #element = null;
+export default class MovieDetailsPopUp extends AbstractView{
   #comments = null;
+  #movieDetailsPopUpCloseButtonClickHandler = null;
 
-  constructor(comments) {
+  constructor(comments, movieDetailsPopUpCloseButtonClickHandler) {
+    super();
     this.#comments = comments;
+    this.#movieDetailsPopUpCloseButtonClickHandler = movieDetailsPopUpCloseButtonClickHandler;
+
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#movieDetailsPopUpCloseButtonClickHandler);
   }
 
   get template(){
     return(getMovieDetailsPopUp(this.#comments));
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
