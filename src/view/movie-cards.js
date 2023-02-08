@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 
 function getMovieCard (film) {
-  const {title, rating, year, duration, description, genre, poster, comments} = film;
+  const {title, rating, year, duration, description, genre, poster, comments, isAdded, isWatched, isFavorite} = film;
   return (`<article class="film-card">
   <a class="film-card__link">
     <h3 class="film-card__title">${title}</h3>
@@ -17,9 +17,9 @@ function getMovieCard (film) {
     <span class="film-card__comments">${comments}</span>
   </a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-    <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item ${isAdded ? 'film-card__controls-item--active' : ''} film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item ${isWatched ? 'film-card__controls-item--active' : ''} film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
+    <button class="film-card__controls-item ${isFavorite ? 'film-card__controls-item--active' : ''} film-card__controls-item--favorite" type="button">Mark as favorite</button>
   </div>
 </article>`);
 }
@@ -28,14 +28,23 @@ function getMovieCard (film) {
 export default class MovieCard extends AbstractView{
   #film = null;
   #movieCardClickHandler = null;
+  #filmCardControlsItemAddToWatchlistHandler = null;
+  #filmCardControlsItemMarkAsWatchedHandler = null;
+  #filmCardControlsItemFavoriteHandler = null;
 
-  constructor(film, commentsCount, movieCardClickHandler) {
+  constructor(film, commentsCount, movieCardClickHandler, filmCardControlsItemAddToWatchlistHandler, filmCardControlsItemMarkAsWatchedHandler, filmCardControlsItemFavoriteHandler) {
     super();
     this.#film = film;
     this.#film.comments = commentsCount;
     this.#movieCardClickHandler = movieCardClickHandler;
+    this.#filmCardControlsItemAddToWatchlistHandler = filmCardControlsItemAddToWatchlistHandler;
+    this.#filmCardControlsItemMarkAsWatchedHandler = filmCardControlsItemMarkAsWatchedHandler;
+    this.#filmCardControlsItemFavoriteHandler = filmCardControlsItemFavoriteHandler;
 
     this.element.querySelector('.film-card__link').addEventListener('click', this.#movieCardClickHandler);
+    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.#filmCardControlsItemAddToWatchlistHandler);
+    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#filmCardControlsItemMarkAsWatchedHandler);
+    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#filmCardControlsItemFavoriteHandler);
   }
 
   get template(){

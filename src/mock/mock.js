@@ -7,7 +7,10 @@ export const filmCards = [
     duration: '2h 14m',
     description: 'Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
     genre: 'comedy',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg'
+    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
+    isFavorite: false,
+    isWatched: false,
+    isAdded: false
   },
   {
     id: 1,
@@ -17,7 +20,10 @@ export const filmCards = [
     duration: '2h 10m',
     description: 'Aliquam erat volutpat.',
     genre: 'drama',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg'
+    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
+    isFavorite: true,
+    isWatched: true,
+    isAdded: true
   },
   {
     id: 2,
@@ -27,7 +33,10 @@ export const filmCards = [
     duration: '2h 34m',
     description: 'Sed sed nisi sed augue convallis suscipit in sed felis.',
     genre: 'drama',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg'
+    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
+    isFavorite: false,
+    isWatched: false,
+    isAdded: false
   },
   {
     id: 3,
@@ -37,7 +46,10 @@ export const filmCards = [
     duration: '2h 44m',
     description: 'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
     genre: 'sport, horror',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg'
+    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
+    isFavorite: false,
+    isWatched: false,
+    isAdded: false
   },
   {
     id: 4,
@@ -47,7 +59,10 @@ export const filmCards = [
     duration: '2h 14m',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     genre: 'documentary',
-    poster: './images/posters/santa-claus-conquers-the-martians.jpg'
+    poster: './images/posters/santa-claus-conquers-the-martians.jpg',
+    isFavorite: false,
+    isWatched: false,
+    isAdded: false
   }
 ];
 
