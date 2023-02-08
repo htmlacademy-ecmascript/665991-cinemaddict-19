@@ -100,7 +100,7 @@ function getMovieDetailsPopUp (comments) {
 
       <section class="film-details__controls">
         <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button  film-details__control-button--watched" id="watched" name="watched">Already watched</button>
         <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
@@ -151,13 +151,24 @@ function getMovieDetailsPopUp (comments) {
 export default class MovieDetailsPopUp extends AbstractView{
   #comments = null;
   #movieDetailsPopUpCloseButtonClickHandler = null;
+  #filmDetailsControlsWatchlistHandler = null;
+  #filmDetailsControlsWatchedHandler = null;
+  #filmDetailsControlsFavoriteHandler = null;
 
-  constructor(comments, movieDetailsPopUpCloseButtonClickHandler) {
+  constructor(comments, movieDetailsPopUpCloseButtonClickHandler, filmDetailsControlsWatchlistHandler, filmDetailsControlsWatchedHandler, filmDetailsControlsFavoriteHandler) {
     super();
     this.#comments = comments;
     this.#movieDetailsPopUpCloseButtonClickHandler = movieDetailsPopUpCloseButtonClickHandler;
 
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#movieDetailsPopUpCloseButtonClickHandler);
+
+    this.#filmDetailsControlsWatchlistHandler = filmDetailsControlsWatchlistHandler;
+    this.#filmDetailsControlsWatchedHandler = filmDetailsControlsWatchedHandler;
+    this.#filmDetailsControlsFavoriteHandler = filmDetailsControlsFavoriteHandler;
+
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#filmDetailsControlsWatchlistHandler);
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#filmDetailsControlsWatchedHandler);
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#filmDetailsControlsFavoriteHandler);
   }
 
   get template(){
