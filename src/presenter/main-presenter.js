@@ -2,7 +2,6 @@ import { render } from '../framework/render.js';
 import MovieListPresenter from './movie-list-presenter.js';
 import UserRank from '../view/user-rank.js';
 import Navigation from '../view/navigation.js';
-import Filters from '../view/filters.js';
 import FilmsContainer from '../view/films-container.js';
 import EmptyListMessage from '../view/empty-list-message.js';
 
@@ -27,14 +26,13 @@ export default class Presenter {
 
     render(new UserRank(), headerContainer);
     render(new Navigation(), this.#mainContainer);
-    render(new Filters(), this.#mainContainer);
-    render(new FilmsContainer(), this.#mainContainer);
-    const filmsList = document.querySelector('.films-list');
 
     if(this.#films.length === 0) {
+      render(new FilmsContainer(), this.#mainContainer);
+      const filmsList = document.querySelector('.films-list');
       render(new EmptyListMessage(), filmsList);
     } else {
-      const movieListPresenter = new MovieListPresenter(this.#comments, this.#films, filmsList);
+      const movieListPresenter = new MovieListPresenter(this.#comments, this.#films, this.#mainContainer);
       movieListPresenter.init();
     }
   }

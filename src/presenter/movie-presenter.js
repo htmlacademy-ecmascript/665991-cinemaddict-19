@@ -27,6 +27,10 @@ export default class MoviePresenter {
     render(this.#movieCard, filmsListContainer);
   }
 
+  delete = () => {
+    remove(this.#movieCard);
+  };
+
   #processMovieCardClick = () => {
     render(this.#popup, this.#body);
     this.#onOpenPopUp(this);
@@ -56,7 +60,7 @@ export default class MoviePresenter {
     } else {
       this.#film.isAdded = false;
     }
-    // this.#movieCard.element.querySelector('.film-card__controls-item--add-to-watchlist').classList.toggle('film-card__controls-item--active');
+    this.#movieCard.element.querySelector('.film-card__controls-item--add-to-watchlist').classList.toggle('film-card__controls-item--active');
     this.#popup.element.querySelector('.film-details__control-button--watchlist').classList.toggle('film-details__control-button--active');
   };
 
