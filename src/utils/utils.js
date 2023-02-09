@@ -1,3 +1,13 @@
+import duration from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
+dayjs.extend(duration);
+
+export const formatFilmDuration = (filmDuration) => dayjs.duration(filmDuration, 'minutes').format('H[h] mm[m]');
+
+export const getYear = (date) => dayjs(date).format('YYYY');
+
+export const formatCommentDate = (commentDate) => dayjs(commentDate).format('YYYY/MM/DD HH:mm');
+
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
