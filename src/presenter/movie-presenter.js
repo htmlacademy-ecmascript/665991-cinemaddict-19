@@ -19,7 +19,7 @@ export default class MoviePresenter {
     this.#film = film;
     const commentsCount = comments.filter((comment) => (comment.id === film.id)).length;
     this.#movieCard = new MovieCard(film, commentsCount, this.#processMovieCardClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
-    this.#popup = new MovieDetailsPopUp(comments, this.#processMovieDetailsPopUpCloseButtonClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
+    this.#popup = new MovieDetailsPopUp(comments, this.#film, this.#processMovieDetailsPopUpCloseButtonClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
 
     const filmsListContainer = document.querySelector('.films-list__container');
     this.#body = document.querySelector('body');
@@ -38,8 +38,7 @@ export default class MoviePresenter {
     document.addEventListener('keydown', (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        remove(this.#popup);
-        this.#body.classList.remove('hide-overflow');
+        this.closePopUp();
       }
     });
   };
@@ -47,11 +46,11 @@ export default class MoviePresenter {
   closePopUp = () => {
     this.#popup.element.remove();
     this.#body.classList.remove('hide-overflow');
+    this.#onClosePopUp();
   };
 
   #processMovieDetailsPopUpCloseButtonClick = () => {
     this.closePopUp();
-    this.#onClosePopUp();
   };
 
   #processAddToWatchListClick = () => {
