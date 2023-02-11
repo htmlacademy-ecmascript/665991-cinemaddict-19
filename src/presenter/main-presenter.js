@@ -1,38 +1,37 @@
 import { render } from '../framework/render.js';
 import MovieListPresenter from './movie-list-presenter.js';
 import UserRank from '../view/user-rank.js';
-import Navigation from '../view/navigation.js';
 import FilmsContainer from '../view/films-container.js';
 import EmptyListMessage from '../view/empty-list-message.js';
+import FilterPresenter from './filter-presenter.js';
 
 const headerContainer = document.querySelector('.header');
 
 export default class Presenter {
   #commentModel = null;
   #filmModel = null;
-  #comments = null;
-  #films = null;
   #mainContainer = null;
+  #filterModel = null;
 
-  constructor(mainContainer, commentModel, filmModel) {
+  constructor(mainContainer, commentModel, filmModel, filterModel) {
     this.#mainContainer = mainContainer;
     this.#commentModel = commentModel;
     this.#filmModel = filmModel;
+    this.#filterModel = filterModel;
   }
 
   init() {
-    this.#comments = this.#commentModel.comments;
-    this.#films = this.#filmModel.films;
 
     render(new UserRank(), headerContainer);
-    render(new Navigation(), this.#mainContainer);
+    const filtersPresenter = new FilterPresenter(this.#mainContainer, this.#filterModel, this.#filmModel);
+    filtersPresenter.init();
 
-    if(this.#films.length === 0) {
+    if(this.#filmModel.films.length === 0) {
       render(new FilmsContainer(), this.#mainContainer);
       const filmsList = document.querySelector('.films-list');
       render(new EmptyListMessage(), filmsList);
     } else {
-      const movieListPresenter = new MovieListPresenter(this.#comments, this.#films, this.#mainContainer);
+      const movieListPresenter = new MovieListPresenter(this.#commentModel, this.#filmModel, this.#filterModel, this.#mainContainer);
       movieListPresenter.init();
     }
   }

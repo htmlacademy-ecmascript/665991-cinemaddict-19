@@ -2,8 +2,10 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { formatFilmDuration, getYear } from '../utils/utils.js';
 
 
-function getMovieCard (film) {
-  const {title, rating, year, duration, description, genre, poster, comments, isAdded, isWatched, isFavorite} = film;
+function getMovieCard ({comments, title, rating, year, duration, description, genre, poster, userDetails}) {
+  const isAddedActive = userDetails.watchlist ? 'film-card__controls-item--active' : '';
+  const isWatchedActive = userDetails.alreadyWatched ? 'film-card__controls-item--active' : '';
+  const isFavoriteActive = userDetails.favorite ? 'film-card__controls-item--active' : '';
   return (`<article class="film-card">
   <a class="film-card__link">
     <h3 class="film-card__title">${title}</h3>
@@ -18,9 +20,9 @@ function getMovieCard (film) {
     <span class="film-card__comments">${comments}</span>
   </a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item ${isAdded ? 'film-card__controls-item--active' : ''} film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item ${isWatched ? 'film-card__controls-item--active' : ''} film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-    <button class="film-card__controls-item ${isFavorite ? 'film-card__controls-item--active' : ''} film-card__controls-item--favorite" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item ${isAddedActive} film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item ${isWatchedActive} film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
+    <button class="film-card__controls-item ${isFavoriteActive} film-card__controls-item--favorite" type="button">Mark as favorite</button>
   </div>
 </article>`);
 }

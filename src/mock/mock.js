@@ -8,9 +8,12 @@ export const filmCards = [
     description: 'Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
     genre: 'comedy',
     poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    isFavorite: false,
-    isWatched: false,
-    isAdded: false
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: false,
+      watchingDate: '2017-05-12T16:12:32.554Z',
+      favorite: false
+    }
   },
   {
     id: 1,
@@ -21,9 +24,12 @@ export const filmCards = [
     description: 'Aliquam erat volutpat.',
     genre: 'drama',
     poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    isFavorite: true,
-    isWatched: true,
-    isAdded: true
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: false,
+      watchingDate: '2019-05-12T16:12:32.554Z',
+      favorite: false
+    }
   },
   {
     id: 2,
@@ -34,9 +40,12 @@ export const filmCards = [
     description: 'Sed sed nisi sed augue convallis suscipit in sed felis.',
     genre: 'drama',
     poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    isFavorite: false,
-    isWatched: false,
-    isAdded: false
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: false,
+      watchingDate: '2021-05-12T16:12:32.554Z',
+      favorite: false
+    }
   },
   {
     id: 3,
@@ -47,9 +56,12 @@ export const filmCards = [
     description: 'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
     genre: 'sport, horror',
     poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    isFavorite: false,
-    isWatched: false,
-    isAdded: false
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: false,
+      watchingDate: '2022-05-12T16:12:32.554Z',
+      favorite: false
+    }
   },
   {
     id: 4,
@@ -60,9 +72,12 @@ export const filmCards = [
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     genre: 'documentary',
     poster: './images/posters/santa-claus-conquers-the-martians.jpg',
-    isFavorite: false,
-    isWatched: false,
-    isAdded: false
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: false,
+      watchingDate: '2023-05-12T16:12:32.554Z',
+      favorite: false
+    }
   }
 ];
 

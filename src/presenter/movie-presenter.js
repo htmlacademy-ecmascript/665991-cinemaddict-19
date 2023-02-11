@@ -1,6 +1,7 @@
 import { render, remove } from '../framework/render.js';
 import MovieCard from '../view/movie-cards.js';
 import MovieDetailsPopUp from '../view/movie-details-pop-up.js';
+import { UserAction, UpdateType } from '../utils/const.js';
 
 export default class MoviePresenter {
   #popup = null;
@@ -9,10 +10,12 @@ export default class MoviePresenter {
   #movieCard = null;
   #onOpenPopUp = null;
   #onClosePopUp = null;
+  #handleDataChange = null;
 
-  constructor(onOpenPopUp, onClosePopUp) {
+  constructor(onOpenPopUp, onClosePopUp, handleViewAction) {
     this.#onOpenPopUp = onOpenPopUp;
     this.#onClosePopUp = onClosePopUp;
+    this.#handleDataChange = handleViewAction;
   }
 
   init(film, comments) {
@@ -54,33 +57,48 @@ export default class MoviePresenter {
   };
 
   #processAddToWatchListClick = () => {
-    if (this.#film.isAdded === false) {
-      this.#film.isAdded = true;
-    } else {
-      this.#film.isAdded = false;
-    }
-    this.#movieCard.element.querySelector('.film-card__controls-item--add-to-watchlist').classList.toggle('film-card__controls-item--active');
-    this.#popup.element.querySelector('.film-details__control-button--watchlist').classList.toggle('film-details__control-button--active');
+    this.#handleDataChange(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {
+        ...this.#film,
+        userDetails: {
+          watchlist: !this.#film.userDetails.watchlist,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          favorite: this.#film.userDetails.favorite
+        }
+      },
+    );
   };
 
   #processMarkAsWatchedClick = () => {
-    if (this.#film.isWatched === false) {
-      this.#film.isWatched = true;
-    } else {
-      this.#film.isWatched = false;
-    }
-    this.#movieCard.element.querySelector('.film-card__controls-item--mark-as-watched').classList.toggle('film-card__controls-item--active');
-    this.#popup.element.querySelector('.film-details__control-button--watched').classList.toggle('film-details__control-button--active');
+    this.#handleDataChange(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {
+        ...this.#film,
+        userDetails: {
+          watchlist: this.#film.userDetails.watchlist,
+          alreadyWatched: !this.#film.userDetails.alreadyWatched,
+          favorite: this.#film.userDetails.favorite
+        }
+      },
+    );
   };
 
   #processMarkAsFavorite = () => {
-    if (this.#film.isFavorite === false) {
-      this.#film.isFavorite = true;
-    } else {
-      this.#film.isFavorite = false;
-    }
-    this.#movieCard.element.querySelector('.film-card__controls-item--favorite').classList.toggle('film-card__controls-item--active');
-    this.#popup.element.querySelector('.film-details__control-button--favorite').classList.toggle('film-details__control-button--active');
+    this.#handleDataChange(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {
+        ...this.#film,
+        userDetails: {
+          watchlist: this.#film.userDetails.watchlist,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          favorite: !this.#film.userDetails.favorite
+        }
+      },
+    );
   };
 }
 

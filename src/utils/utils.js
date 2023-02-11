@@ -26,3 +26,6 @@ export const getMockComments = (CommentCount, comments)=> {
   });
   return randomList;
 };
+
+export const sortByDate = (a,b) => dayjs(b.year).diff(dayjs(a.year));
+export const sortByRating = (a,b) => b.rating - a.rating;
