@@ -21,6 +21,7 @@ export default class MovieListPresenter {
   #filterModel = null;
   #sortComponent = null;
   #filterType = FilterType.ALL;
+  #filmsContainer = new FilmsContainer();
 
   constructor(commentModel, filmModel, filterModel, mainContainer) {
     this.#commentModel = commentModel;
@@ -36,7 +37,7 @@ export default class MovieListPresenter {
     this.#filterType = this.#filterModel.filter;
     const films = [...this.#filmModel.films];
     const filteredFilms = filter[this.#filterType](films);
-
+    console.log(filteredFilms);
     switch (this.#currentSortType) {
       case SortType.DEFAULT:
         return filteredFilms;
@@ -52,7 +53,18 @@ export default class MovieListPresenter {
     return this.#commentModel.comments;
   }
 
+  init() {
+    this.#renderSorting();
+
+    this.#originalFilmsList = [...this.films];
+
+    this.#sliceAndIterate();
+    this.#renderShowMoreButton();
+  }
+
   #sliceAndIterate = () => {
+    render(this.#filmsContainer, this.#mainContainer);
+    this.#filmsList = document.querySelector('.films-list');
     this.films.slice(this.#renderedFilmCount,this.#renderedFilmCount + 5).forEach((film)=>{
       const moviePresenter = new MoviePresenter(this.#onOpenPopup, this.#onClosePopup, this.#handleViewAction);
       moviePresenter.init(film, this.comments);
@@ -79,32 +91,25 @@ export default class MovieListPresenter {
     switch (updateType) {
       case UpdateType.MINOR:
         this.#deleteAllMovies();
+        this.#renderSorting();
         this.#sliceAndIterate();
+        this.#renderShowMoreButton();
         break;
       case UpdateType.MAJOR:
         this.#deleteAllMovies();
+        this.#renderSorting();
         this.#currentSortType = SortType.DEFAULT;
         this.#sliceAndIterate();
+        this.#renderShowMoreButton();
         break;
     }
   };
 
-  init() {
-    this.#renderFilter();
-    render(new FilmsContainer(), this.#mainContainer);
-    this.#filmsList = document.querySelector('.films-list');
-
-    this.#originalFilmsList = [...this.films];
-
-    this.#sliceAndIterate();
-    if (this.films.length > this.#renderedFilmCount) {
-      this.#renderShowMoreButton();
-    }
-  }
-
   #renderShowMoreButton = () => {
     this.#showMoreButton = new ShowMoreButton(this.#processShowMoreButtonClick);
-    render(this.#showMoreButton, this.#filmsList);
+    if (this.films.length > this.#renderedFilmCount) {
+      render(this.#showMoreButton, this.#filmsList);
+    }
   };
 
   #processShowMoreButtonClick = () => {
@@ -128,7 +133,7 @@ export default class MovieListPresenter {
     this.#currentPresenter = moviePresenter;
   };
 
-  #renderFilter = () => {
+  #renderSorting = () => {
     this.#sortComponent = new SortView(this.#currentSortType, this.#sortTypeChangeHandler);
     render(this.#sortComponent, this.#mainContainer);
   };
@@ -137,15 +142,17 @@ export default class MovieListPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
+    this.#renderedFilmCount = 0;
     this.#currentSortType = sortType;
     this.#deleteAllMovies();
-    this.#renderFilter();
+    this.#renderSorting();
     this.#sliceAndIterate();
   };
 
   #deleteAllMovies = () => {
     this.#moviePresenterList.forEach((moviePresenter) => moviePresenter.delete());
-    this.#renderedFilmCount = 0;
     remove(this.#sortComponent);
+    remove(this.#showMoreButton);
+    remove(this.#filmsContainer);
   };
 }

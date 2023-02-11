@@ -4,7 +4,8 @@ import AbstractView from '../framework/view/abstract-view.js';
 function createFilterItemTemplate (filter, currentFilterType) {
   return `
   <a href="#${filter.name}"
-  class="main-navigation__item ${filter.type === currentFilterType ? 'main-navigation__item--active' : ''}">
+  class="main-navigation__item ${filter.type === currentFilterType ? 'main-navigation__item--active' : ''}"
+  value = "${filter.type}">
   ${filter.name === 'All' ? 'All movies' : filter.name}
   <span class="main-navigation__item-count">${filter.count}</span>
   </a>`;
@@ -25,23 +26,23 @@ function createFilterTemplate(filterItems, currentFilterType) {
 export default class Navigation extends AbstractView{
   #filters = null;
   #currentFilter = null;
-  #handleFilterTypeChange = null;
+  #handleFilterTypeClick = null;
 
-  constructor({filters, currentFilterType, onFilterTypeChange}) {
+  constructor({filters, currentFilterType, onFilterTypeClick}) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;
-    this.#handleFilterTypeChange = onFilterTypeChange;
+    this.#handleFilterTypeClick = onFilterTypeClick;
 
-    this.element.addEventListener('change', this.#filterTypeChangeHandler);
+    this.element.addEventListener('click', this.#filterTypeClickHandler);
   }
 
   get template() {
     return createFilterTemplate(this.#filters, this.#currentFilter);
   }
 
-  #filterTypeChangeHandler = (evt) => {
+  #filterTypeClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFilterTypeChange(evt.target.value);
+    this.#handleFilterTypeClick(evt.target.attributes.value.nodeValue);
   };
 }

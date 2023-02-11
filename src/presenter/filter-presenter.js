@@ -21,7 +21,6 @@ export default class FilterPresenter {
 
   get filters() {
     const films = this.#filmModel.films;
-    console.log(films);
     return [
       {
         type: FilterType.ALL,
@@ -53,7 +52,7 @@ export default class FilterPresenter {
     this.#filterComponent = new Navigation({
       filters,
       currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      onFilterTypeClick: this.#handleFilterTypeClick
     });
 
     if (prevFilterComponent === null) {
@@ -69,11 +68,12 @@ export default class FilterPresenter {
     this.init();
   };
 
-  #handleFilterTypeChange = (filterType) => {
+  #handleFilterTypeClick = (filterType) => {
     if (this.#filterModel.filter === filterType) {
+      console.log(44);
       return;
     }
-
+      console.log(22);
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
 }

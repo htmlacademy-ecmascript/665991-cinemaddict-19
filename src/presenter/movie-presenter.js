@@ -1,4 +1,4 @@
-import { render, remove } from '../framework/render.js';
+import { render, remove, replace } from '../framework/render.js';
 import MovieCard from '../view/movie-cards.js';
 import MovieDetailsPopUp from '../view/movie-details-pop-up.js';
 import { UserAction, UpdateType } from '../utils/const.js';
@@ -20,14 +20,23 @@ export default class MoviePresenter {
 
   init(film, comments) {
     this.#film = film;
+    const previousMovieCard = this.#movieCard;
     const commentsCount = comments.filter((comment) => (comment.id === film.id)).length;
     this.#movieCard = new MovieCard(film, commentsCount, this.#processMovieCardClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
     this.#popup = new MovieDetailsPopUp(comments, this.#film, this.#processMovieDetailsPopUpCloseButtonClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
 
     const filmsListContainer = document.querySelector('.films-list__container');
     this.#body = document.querySelector('body');
+    if (previousMovieCard === null) {
+      render(this.#movieCard, filmsListContainer);
+      return;
+    }
 
-    render(this.#movieCard, filmsListContainer);
+    if (filmsListContainer.contains(previousMovieCard.element)) {
+      replace(this.#movieCard, previousMovieCard);
+    }
+
+    remove(previousMovieCard);
   }
 
   delete = () => {
