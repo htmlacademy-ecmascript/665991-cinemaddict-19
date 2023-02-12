@@ -35,10 +35,9 @@ export default class MovieCard extends AbstractView{
   #filmCardControlsItemMarkAsWatchedHandler = null;
   #filmCardControlsItemFavoriteHandler = null;
 
-  constructor(film, commentsCount, movieCardClickHandler, filmCardControlsItemAddToWatchlistHandler, filmCardControlsItemMarkAsWatchedHandler, filmCardControlsItemFavoriteHandler) {
+  constructor(film, onClick, onControlButtonClick) {
     super();
     this.#film = film;
-    this.#film.comments = commentsCount;
     this.#movieCardClickHandler = movieCardClickHandler;
     this.#filmCardControlsItemAddToWatchlistHandler = filmCardControlsItemAddToWatchlistHandler;
     this.#filmCardControlsItemMarkAsWatchedHandler = filmCardControlsItemMarkAsWatchedHandler;

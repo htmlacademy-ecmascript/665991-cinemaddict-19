@@ -1,113 +1,93 @@
 import { render, remove, replace } from '../framework/render.js';
 import MovieCard from '../view/movie-cards.js';
-import MovieDetailsPopUp from '../view/movie-details-pop-up.js';
+import PopupPresenter from './popup-presenter.js';
 import { UserAction, UpdateType } from '../utils/const.js';
 
 export default class MoviePresenter {
-  #popup = null;
-  #body = null;
+  #filmListContainer = null;
+  #commentsModel = null;
+  #currentFilterType = null;
+  #handleDataChange = null;
   #film = null;
   #movieCard = null;
-  #onOpenPopUp = null;
-  #onClosePopUp = null;
-  #handleDataChange = null;
+  #popupPresenter = null;
 
-  constructor(onOpenPopUp, onClosePopUp, handleViewAction) {
-    this.#onOpenPopUp = onOpenPopUp;
-    this.#onClosePopUp = onClosePopUp;
-    this.#handleDataChange = handleViewAction;
+  constructor({filmListContainer, commentsModel, currentFilterType, onDataChange}) {
+    this.#filmListContainer = filmListContainer;
+    this.#commentsModel = commentsModel;
+    this.#currentFilterType = currentFilterType;
+    this.#handleDataChange = onDataChange;
   }
 
-  init(film, comments) {
+  init(film) {
     this.#film = film;
-    const previousMovieCard = this.#movieCard;
-    const commentsCount = comments.filter((comment) => (comment.id === film.id)).length;
-    this.#movieCard = new MovieCard(film, commentsCount, this.#processMovieCardClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
-    this.#popup = new MovieDetailsPopUp(comments, this.#film, this.#processMovieDetailsPopUpCloseButtonClick, this.#processAddToWatchListClick, this.#processMarkAsWatchedClick, this.#processMarkAsFavorite);
+    this.#popupPresenter = new PopupPresenter({
+      film,
+      commentsModel: this.#commentsModel,
+      handleControlButton: this.#handleControlButton,
+      handleAddComment: this.#handleAddComment,
+      handleDeleteComment: this.#handleDeleteComment
+    });
 
-    const filmsListContainer = document.querySelector('.films-list__container');
-    this.#body = document.querySelector('body');
+    const openedPopup = this.#popupPresenter.getOpenedPopup();
+
+    if (openedPopup) {
+      this.#popupPresenter.resetPopupComponent(openedPopup.filmPopupComponent, film);
+    }
+
+    const previousMovieCard = this.#movieCard;
+
+    this.#movieCard = new MovieCard({
+      film,
+      onClick: this.#handleClick,
+      onControlBtnClick: this.#handleControlButton
+    });
+
     if (previousMovieCard === null) {
       render(this.#movieCard, filmsListContainer);
       return;
     }
 
-    if (filmsListContainer.contains(previousMovieCard.element)) {
-      replace(this.#movieCard, previousMovieCard);
+    if (this.#filmListContainer.contains(previousMovieCard.element)) {
+      replace(this.#filmComponent, previousMovieCard);
     }
 
     remove(previousMovieCard);
   }
 
-  delete = () => {
+  #handleClick = () => {
+    this.#popupPresenter.showPopup();
+  };
+
+  destroy() {
     remove(this.#movieCard);
-  };
+  }
 
-  #processMovieCardClick = () => {
-    render(this.#popup, this.#body);
-    this.#onOpenPopUp(this);
-    this.#body.classList.add('hide-overflow');
-    document.addEventListener('keydown', (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        this.closePopUp();
-      }
-    });
-  };
-
-  closePopUp = () => {
-    this.#popup.element.remove();
-    this.#body.classList.remove('hide-overflow');
-    this.#onClosePopUp();
-  };
-
-  #processMovieDetailsPopUpCloseButtonClick = () => {
-    this.closePopUp();
-  };
-
-  #processAddToWatchListClick = () => {
+  #handleControlButton = (updatedUserDetails, controlFilter) => {
+    if (controlFilter === this.#currentFilterType) {
+      this.destroy();
+    }
     this.#handleDataChange(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
-      {
-        ...this.#film,
-        userDetails: {
-          watchlist: !this.#film.userDetails.watchlist,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          favorite: this.#film.userDetails.favorite
-        }
-      },
+      UpdateType.PATCH,
+      {...this.#film, userDetails: updatedUserDetails}
     );
   };
 
-  #processMarkAsWatchedClick = () => {
+  #handleAddComment = (filmId, commentToAdd) => {
     this.#handleDataChange(
-      UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
-      {
-        ...this.#film,
-        userDetails: {
-          watchlist: this.#film.userDetails.watchlist,
-          alreadyWatched: !this.#film.userDetails.alreadyWatched,
-          favorite: this.#film.userDetails.favorite
-        }
-      },
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      { filmId, commentToAdd }
     );
   };
 
-  #processMarkAsFavorite = () => {
+  #handleDeleteComment = (updatedFilm) => {
     this.#handleDataChange(
-      UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
-      {
-        ...this.#film,
-        userDetails: {
-          watchlist: this.#film.userDetails.watchlist,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          favorite: !this.#film.userDetails.favorite
-        }
-      },
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      updatedFilm
     );
   };
+
 }
-

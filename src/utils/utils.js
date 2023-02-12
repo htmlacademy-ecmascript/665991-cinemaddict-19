@@ -12,6 +12,8 @@ function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+export const humanizeDate = (date, format) => date ? dayjs(date).format(format) : '';
+
 export const getMockFilms = (filmCount, filmCards)=> {
   const getRandomFilm = () => getRandomArrayElement(filmCards);
   const randomList = Array.from({length: filmCount}, getRandomFilm);
