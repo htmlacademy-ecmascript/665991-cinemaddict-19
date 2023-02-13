@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createFilmSectionTemplate = () => `<section class="films"></section>`;
+const createFilmSectionTemplate = () => '<section class="films"></section>';
 
 export default class FilmSectionView extends AbstractView {
 
