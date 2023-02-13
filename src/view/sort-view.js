@@ -32,7 +32,7 @@ export default class SortView extends AbstractView{
   #sortTypeChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.classList.contains('sort__button') && !evt.target.classList.contains('sort__button--active')) {
-      this.#handleSortTypeChange(evt.target, evt.target.dataset.sortType);
+      this.#handleSortTypeChange(evt.target.dataset.sortType, evt.target);
     }
   };
 }

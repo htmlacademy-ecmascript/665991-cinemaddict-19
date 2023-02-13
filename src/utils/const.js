@@ -18,10 +18,10 @@ const UpdateType = {
 };
 
 const FilterType = {
-  ALL: 'All',
-  WATCHLIST: 'Watchlist',
-  HISTORY: 'History',
-  FAVORITE: 'Favorite'
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITE: 'favorites'
 };
 
 const COMMENTS_EMOTIONS = [

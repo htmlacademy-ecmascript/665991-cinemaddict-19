@@ -1,6 +1,6 @@
 import MovieDetailsPopUp from '../view/movie-details-pop-up.js';
 
-let openedPopup null;
+let openedPopup = null;
 
 export default class PopupPresenter {
   #film = null;
@@ -15,7 +15,7 @@ export default class PopupPresenter {
     this.#commentsModel = commentsModel;
     this.#controlButtonHandler = controlButtonHandler;
     this.#addCommentHandler = addCommentHandler;
-    this.deleteCommentHandler = deleteCommentHandler;
+    this.#deleteCommentHandler = deleteCommentHandler;
   }
 
   showPopup() {
@@ -23,13 +23,13 @@ export default class PopupPresenter {
       if (openedPopup) {
         openedPopup.closePopup();
       }
-      this.filmPopupComponent = new MovieDetailsPopUp(
+      this.filmPopupComponent = new MovieDetailsPopUp({
         film: {...this.#film, comments},
         onClose: this.#handleCloseClick,
         onControlButtonClick: this.#controlButtonHandler,
-        onAddComment: this.#handleAddComment,
-        onDeleteComment: this.#handleDeleteComment
-      );
+        onAddComment: this.#addCommentHandler,
+        onDeleteComment: this.#deleteCommentHandler
+      });
       document.body.classList.add('hide-overflow');
       document.body.appendChild(this.filmPopupComponent.element);
       document.addEventListener('keydown', this.#closePopupKeydownHandler);

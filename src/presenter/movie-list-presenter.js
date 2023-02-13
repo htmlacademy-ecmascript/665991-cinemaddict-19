@@ -1,9 +1,8 @@
-import { render, remove } from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import { SortType } from '../utils/const.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreButton from '../view/show-more-button.js';
 import MoviePresenter from './movie-presenter.js';
-import FilmsContainer from '../view/films-container.js';
 import { UserAction,UpdateType } from '../utils/const.js';
 import { sortByDate, sortByRating } from '../utils/utils.js';
 import FilterPresenter from './filter-presenter.js';
@@ -13,6 +12,8 @@ import FilmListContainerView from '../view/film-list-container-view.js';
 import AwardFilmPresenter from './award-film-presenter.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import StatisticsView from '../view/statistics-view.js';
+import EmptyFilmListView from '../view/empty-film-list-view.js';
+import LoadingMessageView from '../view/loading-message-view.js';
 
 const DEFAULT_RENDERED_FILMS_QUANTITY = 5;
 const FILMS_TO_RENDER_QUANTITY = 5;
@@ -41,8 +42,8 @@ export default class MovieListPresenter {
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
   });
+
   #filterPresenter = null;
-  #statisticsContainer = this.#footer;
 
   constructor({footer, commentModel, filmModel, filterModel, mainContainer, header}) {
     this.#footer = footer;
@@ -57,26 +58,25 @@ export default class MovieListPresenter {
     this.#commentModel.addObserver(this.#handleModelEvent);
   }
 
-  init() {
-    this.#renderFilter();
-    this.#renderSorting();
-    this.#renderFilmList();
-    this.#renderLoadingMessage();
-    this.#renderAwardSection();
-  }
-
   get films() {
     const filterType = this.#filterModel.filter;
     const filteredFilms = this.#filterPresenter.filters[filterType].filteredFilms;
 
     switch (this.#currentSortType) {
-      case SortType.DEFAULT:
+      case SortType.DATE:
         return filteredFilms.sort(sortByDate);
       case SortType.RATING:
         return filteredFilms.sort(sortByRating);
       default:
         return filteredFilms;
     }
+  }
+
+  init() {
+    this.#renderFilter();
+    this.#renderSorting();
+    this.#renderFilmList();
+    this.#renderLoadingMessage();
   }
 
   get comments() {
@@ -161,11 +161,11 @@ export default class MovieListPresenter {
         this.#moviePresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this.#deleteAllMovies();
+        this.deleteAllMovies();
         this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.MAJOR:
-        this.#deleteAllMovies({resetSortType: true});
+        this.deleteAllMovies({resetSortType: true});
         this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.INIT:
@@ -177,6 +177,8 @@ export default class MovieListPresenter {
         }
         this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         this.#renderShowMoreButton();
+        this.#renderAwardSection();
+        break;
       default:
         throw new Error(`Unknown update type: ${updateType}`);
     }
@@ -225,18 +227,18 @@ export default class MovieListPresenter {
   #renderStatistics = () => {
     render(new StatisticsView({
       quantity: this.#filmModel.films.length
-    }), this.#statisticsContainer);
+    }), this.#footer);
   };
 
   #sortTypeChangeHandler = (sortType, button) => {
-    this.#deleteAllMovies();
+    this.deleteAllMovies();
     this.#currentSortType = sortType;
     this.#setActiveSortButton(button);
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
   };
 
-  #deleteAllMovies = ({resetSortType = false} = {}) => {
-    this.#moviePresent.forEach((presenter) => presenter.delete());
+  deleteAllMovies({resetSortType = false} = {}) {
+    this.#moviePresenter.forEach((presenter) => presenter.destroy());
     this.#moviePresenter.clear();
 
     this.#sortComponent.element.style.display = 'flex';
@@ -249,18 +251,18 @@ export default class MovieListPresenter {
       this.#currentSortType = SortType.DEFAULT;
       this.#setActiveSortButton(this.#sortComponent.element.querySelector('.sort__button[data-sort-type="default"]'));
     }
-  };
+  }
 
   #setActiveSortButton(button) {
     this.#sortComponent.element.querySelector('.sort__button--active').classList.remove('sort__button--active');
     button.classList.add('sort__button--active');
-  };
+  }
 
   #renderEmptyFilmList = () => {
     this.#sortComponent.element.style.display = 'none';
     remove(this.#showMoreButton);
     this.#emptyListComponent = new EmptyFilmListView({
-      filters: this.#filtersPresenter.filters,
+      filters: this.#filterPresenter.filters,
       activeFilter: this.#filterModel.filter
     });
     render(this.#emptyListComponent, this.#filmListComponent.element);

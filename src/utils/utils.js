@@ -8,7 +8,7 @@ export const getYear = (date) => dayjs(date).format('YYYY');
 
 export const formatCommentDate = (commentDate) => dayjs(commentDate).format('YYYY/MM/DD HH:mm');
 
-function getRandomArrayElement(items) {
+export function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
@@ -29,5 +29,5 @@ export const getMockComments = (CommentCount, comments)=> {
   return randomList;
 };
 
-export const sortByDate = (a,b) => dayjs(b.year).diff(dayjs(a.year));
-export const sortByRating = (a,b) => b.rating - a.rating;
+export const sortByDate = (a,b) => dayjs(b.filmInfo.release.date).diff(dayjs(a.filmInfo.release.date));
+export const sortByRating = (a,b) => b.filmInfo.totalRating - a.filmInfo.totalRating;

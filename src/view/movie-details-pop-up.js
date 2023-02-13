@@ -1,9 +1,9 @@
-import { movieDetailsPopUp } from '../mock/mock.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { formatCommentDate, humanizeDate, formatFilmDuration } from '../utils/utils.js';
+import { humanizeDate, formatFilmDuration } from '../utils/utils.js';
 import { COMMENTS_EMOTIONS, UserAction, DateFormat, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT } from '../utils/const.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import he from 'he';
 
 dayjs.extend(relativeTime);
 
@@ -84,11 +84,11 @@ const createControlButtonsTemplate = (userDetails) => {
   `);
 };
 
-const createCommentsTemplate = (comments) => (`
+const createCommentsTemplate = (comments, isDeleting, deletingCommentId) => (`
     <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
     <ul class="film-details__comments-list">
       ${comments.map((comment) => `
-      <li class="film-details__comment">
+      <li class="film-details__comment ${isDeleting && deletingCommentId === comment.id ? 'deleting' : ''}">
       <span class="film-details__comment-emoji">
         <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
       </span>
@@ -97,12 +97,12 @@ const createCommentsTemplate = (comments) => (`
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
           <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-          <button class="film-details__comment-delete" data-id="${comment.id}">delete</button>
-        </p>
-      </div>
-    </li>
-      `).join('')}
-    </ul>
+            <button class="film-details__comment-delete" data-id="${comment.id}">${isDeleting && deletingCommentId === comment.id ? 'Deleting...' : 'Delete'}</button>
+          </p>
+        </div>
+      </li>
+        `).join('')}
+      </ul>
 `);
 
 const createAddCommentFormTemplate = (commentEmoji) => (`
@@ -125,10 +125,10 @@ const createAddCommentFormTemplate = (commentEmoji) => (`
 `);
 
 function getMovieDetailsPopUp (film) {
-  const {filmInfo, userDetails, comments, commentEmoji} = film;
+  const {filmInfo, userDetails, comments, commentEmoji, isDeleting, deletingCommentId} = film;
   const popupInfoTemplate = createPopupTemplate(filmInfo);
   const popupControlButtonsTemplate = createControlButtonsTemplate(userDetails);
-  const commentsTemplate = createCommentsTemplate(comments);
+  const commentsTemplate = createCommentsTemplate(comments, isDeleting, deletingCommentId);
   const formTemplate = createAddCommentFormTemplate(commentEmoji);
 
   return `
@@ -163,30 +163,32 @@ function getMovieDetailsPopUp (film) {
 export default class MovieDetailsPopUp extends AbstractStatefulView{
   #movieDetailsPopUpCloseButtonClickHandler = null;
   #controlButtonClickHandler = null;
-  #AddCommentSubmitHandler = null;
+  #addCommentSubmitHandler = null;
   #deleteCommentClickHandler = null;
 
-  constructor(film, onClose, onControlButtonClick, onAddComment, onDeleteComment) {
+  constructor({film, onClose, onControlButtonClick, onAddComment, onDeleteComment}) {
     super();
 
-    this._setState(MovieDetailsPopUp.parseMovieToState(movie));
+    this._setState(MovieDetailsPopUp.parseMovieToState(film));
 
     this.#movieDetailsPopUpCloseButtonClickHandler = onClose;
     this.#controlButtonClickHandler = onControlButtonClick;
-    this.#AddCommentSubmitHandler = onAddComment;
+    this.#addCommentSubmitHandler = onAddComment;
     this.#deleteCommentClickHandler = onDeleteComment;
 
     this._restoreHandlers();
   }
 
   reset(film) {
-    this.#updateElement(FilmPopupView.parseMovieToState(film));
+    this.#updateElement(MovieDetailsPopUp.parseMovieToState(film));
   }
 
-  static parseMovieToState(movie) {
+  static parseMovieToState(film) {
     return {
-      ...movie,
-      emoji: ''
+      ...film,
+      commentEmoji: COMMENTS_EMOTIONS[0],
+      isDeleting: false,
+      deletingCommentId: ''
     };
   }
 
@@ -206,8 +208,13 @@ export default class MovieDetailsPopUp extends AbstractStatefulView{
         this.#shakeElement(this.element.querySelector('.film-details__new-comment'));
         break;
       case UserAction.DELETE_COMMENT:
-        this.#shakeElement(this.element.querySelector('.deleting-comment'));
-        this.element.querySelector('.deleting-comment').classList.remove('deleting-comment');
+        this.element.querySelector('.deleting').classList.add(SHAKE_CLASS_NAME);
+        setTimeout(() => {
+          this.#updateElement({
+            isDeleting: false,
+            deletingCommentId: ''
+          });
+        }, SHAKE_ANIMATION_TIMEOUT);
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
@@ -232,27 +239,32 @@ export default class MovieDetailsPopUp extends AbstractStatefulView{
         ...this._state.userDetails,
         [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
       };
+
       this.#controlButtonClickHandler(updatedUserDetails);
     }
   };
 
-  #addCommentKeydownHandler = (evt) => {
-    if (isCtrlPlusEnterPressed(evt)) {
+  #handleAddCommentSubmit = (evt) => {
+    if (evt.ctrlKey && evt.code === 'Enter') {
       const commentToAdd = {
         comment: he.encode(evt.target.value),
         emotion: this._state.commentEmoji
       };
-      this.#handleAddCommentSubmit(this._state.id, commentToAdd);
+      this.#addCommentSubmitHandler(this._state.id, commentToAdd);
     }
   };
 
-  #deleteCommentClickHandler = (evt) => {
+  #handleCommentDeleteClick = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
+      const state = this._state;
+      this.#updateElement({
+        ...this._state,
+        isDeleting: true,
+        deletingCommentId: evt.target.dataset.id
+      });
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
-      this._state.comments = this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id);
-      evt.target.closest('.film-details__comment').classList.add('deleting-comment');
-      this.#handleDeleteCommentClick({
-        ...FilmPopupView.parseStateToFilm(this._state),
+      this.#deleteCommentClickHandler({
+        ...MovieDetailsPopUp.parseStateToFilm(state),
         commentToDelete
       });
     }
@@ -265,8 +277,8 @@ export default class MovieDetailsPopUp extends AbstractStatefulView{
   _restoreHandlers() {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#controlButtonsClickHandler);
-    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#deleteCommentClickHandler);
-    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#addCommentKeydownHandler);
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#handleCommentDeleteClick);
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#handleAddCommentSubmit);
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
   }
 
@@ -278,6 +290,8 @@ export default class MovieDetailsPopUp extends AbstractStatefulView{
 
     delete film.scrollPosition;
     delete film.commentEmoji;
+    delete film.isDeleting;
+    delete film.deletingCommentId;
 
     return film;
   }

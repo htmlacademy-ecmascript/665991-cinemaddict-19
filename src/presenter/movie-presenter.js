@@ -24,9 +24,9 @@ export default class MoviePresenter {
     this.#popupPresenter = new PopupPresenter({
       film,
       commentsModel: this.#commentsModel,
-      handleControlButton: this.#handleControlButton,
-      handleAddComment: this.#handleAddComment,
-      handleDeleteComment: this.#handleDeleteComment
+      controlButtonHandler: this.#handleControlButton,
+      addCommentHandler: this.#handleAddComment,
+      deleteCommentHandler: this.#handleDeleteComment
     });
 
     const openedPopup = this.#popupPresenter.getOpenedPopup();
@@ -40,16 +40,16 @@ export default class MoviePresenter {
     this.#movieCard = new MovieCard({
       film,
       onClick: this.#handleClick,
-      onControlBtnClick: this.#handleControlButton
+      onControlButtonClick: this.#handleControlButton
     });
 
     if (previousMovieCard === null) {
-      render(this.#movieCard, filmsListContainer);
+      render(this.#movieCard, this.#filmListContainer);
       return;
     }
 
     if (this.#filmListContainer.contains(previousMovieCard.element)) {
-      replace(this.#filmComponent, previousMovieCard);
+      replace(this.#movieCard, previousMovieCard);
     }
 
     remove(previousMovieCard);
@@ -89,5 +89,14 @@ export default class MoviePresenter {
       updatedFilm
     );
   };
+
+  setAborting(actionType) {
+    const openedPopup = this.#popupPresenter.getOpenedPopup();
+    if (openedPopup) {
+      openedPopup.filmPopupComponent.errShake(actionType);
+      return;
+    }
+    this.#movieCard.shake();
+  }
 
 }

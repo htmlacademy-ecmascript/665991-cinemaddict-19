@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import FilterType from '../utils/const.js';
+import { FilterType } from '../utils/const.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
   const {type, name, filteredFilms} = filter;
@@ -15,7 +15,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   );
 };
 
-const createFiltersTemplate = (filters, currentFilterType) => (
+const createFilterTemplate = (filters, currentFilterType) => (
   `<nav class="main-navigation">
       <a href="#all" data-filter-type="${FilterType.ALL}"
       class="main-navigation__item ${currentFilterType === FilterType.ALL ? 'main-navigation__item--active' : ''}">
@@ -51,4 +51,5 @@ export default class FilterView extends AbstractView{
       this.#handleFilterTypeClick(filter.dataset.filterType);
     }
   };
+
 }

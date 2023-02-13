@@ -28,7 +28,10 @@ export default class FilterPresenter {
     const previousUserRankComponent = this.#userRankComponent;
 
     const filmsWatchedCount = filters.history.filteredFilms.length;
-    this.#userRankComponent = new UserRankView({filmsWatchedCount});
+
+    this.#userRankComponent = new UserRankView({
+      watchedFilmsQuantity: filmsWatchedCount
+    });
 
     this.#filterComponent = new FilterView({
       filters,
@@ -60,32 +63,38 @@ export default class FilterPresenter {
   get filters() {
     const films = this.#filmModel.films;
 
-    return [
+    const filters = {
       all: {
         type: FilterType.ALL,
         name: 'All',
         count: filter[FilterType.ALL](films).length,
-        filteredFilms: filter[FilterType.ALL](films)
+        emptyFilmsMessage: 'There are no movies in our database',
+        filteredFilms: [...films]
       },
       watchlist: {
         type: FilterType.WATCHLIST,
         name: 'Watchlist',
         count: filter[FilterType.WATCHLIST](films).length,
+        emptyFilmsMessage: 'There are no movies to watch now',
         filteredFilms: filter[FilterType.WATCHLIST](films)
       },
       history: {
         type: FilterType.HISTORY,
         name: 'History',
         count: filter[FilterType.HISTORY](films).length,
+        emptyFilmsMessage: 'There are no watched movies now',
         filteredFilms: filter[FilterType.HISTORY](films)
       },
-      favorite: {
+      favorites: {
         type: FilterType.FAVORITE,
-        name: 'Favorite',
+        name: 'Favorites',
         count: filter[FilterType.FAVORITE](films).length,
+        emptyFilmsMessage: 'There are no favorite movies now',
         filteredFilms: filter[FilterType.FAVORITE](films)
       }
-    ];
+    };
+
+    return filters;
   }
 
   #handleModelEvent = () => {
