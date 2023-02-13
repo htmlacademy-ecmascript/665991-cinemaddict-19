@@ -8,9 +8,11 @@ export const getYear = (date) => dayjs(date).format('YYYY');
 
 export const formatCommentDate = (commentDate) => dayjs(commentDate).format('YYYY/MM/DD HH:mm');
 
-function getRandomArrayElement(items) {
+export function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
+
+export const humanizeDate = (date, format) => date ? dayjs(date).format(format) : '';
 
 export const getMockFilms = (filmCount, filmCards)=> {
   const getRandomFilm = () => getRandomArrayElement(filmCards);
@@ -26,3 +28,6 @@ export const getMockComments = (CommentCount, comments)=> {
   });
   return randomList;
 };
+
+export const sortByDate = (a,b) => dayjs(b.filmInfo.release.date).diff(dayjs(a.filmInfo.release.date));
+export const sortByRating = (a,b) => b.filmInfo.totalRating - a.filmInfo.totalRating;

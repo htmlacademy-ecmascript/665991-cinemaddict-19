@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 const createEmptyFilmListTemplate = (filters, activeFilter) => `<h2 class="films-list__title">${filters[activeFilter].emptyFilmsMessage}</h2>`;
 
-export default class EmptyListMessage extends AbstractView{
+export default class EmptyFilmListView extends AbstractView {
   #filters = null;
   #activeFilter = null;
 
